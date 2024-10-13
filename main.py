@@ -89,13 +89,18 @@ class JpegImageLoader(ImageLoader):
                 file_path = os.path.join(folder_path, filename)
                 try:
                     with Image.open(file_path) as img:
+
                         # Attempt to get DPI from image metadata
-                        dpi_info = img.info.get('dpi', (self.dpi_x, self.dpi_y))
-                        self.dpi_x, self.dpi_y = round(dpi_info[0]), round(dpi_info[1])
+                        try:
+                            dpi_info = img.info.get('dpi', (self.dpi_x, self.dpi_y))
+                            self.dpi_x, self.dpi_y = round(dpi_info[0]), round(dpi_info[1])
+                        except Exception as e:
+                            print(f"Error Get Image DPI {filename}: {e}")
 
                         # Convert to specified color space
                         compressed_img = img.convert(color_space)
                         image_list.append(compressed_img)
+
                 except (IOError, OSError) as e:
                     print(f"Error loading image {filename}: {e}")
 
